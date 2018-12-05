@@ -296,6 +296,7 @@ Python}\label{convex-optimization-w-python}}
         \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
         \PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k}{as} \PY{n+nn}{sns}
         \PY{k+kn}{from} \PY{n+nn}{sympy} \PY{k}{import} \PY{o}{*}
+        \PY{k+kn}{from} \PY{n+nn}{cvxpy} \PY{k}{import} \PY{o}{*}
 \end{Verbatim}
 
 
@@ -342,8 +343,9 @@ Python}\label{convex-optimization-w-python}}
     \begin{Verbatim}[commandchars=\\\{\}]
 {\color{incolor}In [{\color{incolor}4}]:} \PY{n}{oneDayReturns} \PY{o}{=} \PY{n}{df}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{:}\PY{p}{]}\PY{o}{.}\PY{n}{apply}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{p}{(}\PY{p}{(}\PY{n}{x} \PY{o}{\PYZhy{}} \PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shift}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shift}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
         \PY{n}{names} \PY{o}{=} \PY{n+nb}{list}\PY{p}{(}\PY{n}{oneDayReturns}\PY{o}{.}\PY{n}{columns}\PY{p}{)}
-        \PY{n}{meansOfReturns} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{oneDayReturns}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{,}
+        \PY{n}{meansOfReturns} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{oneDayReturns}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{p}{)}\PY{p}{,}
                                       \PY{n}{index} \PY{o}{=} \PY{n}{names}\PY{p}{)}
+        \PY{n}{meansOfReturns1} \PY{o}{=} \PY{n+nb}{abs}\PY{p}{(}\PY{n}{oneDayReturns}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{)}
         \PY{n}{varianceOfReturns} \PY{o}{=} \PY{n}{oneDayReturns}\PY{o}{.}\PY{n}{var}\PY{p}{(}\PY{p}{)}
         \PY{n}{table} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{concat}\PY{p}{(}\PY{p}{[}\PY{n}{meansOfReturns}\PY{p}{,} \PY{n}{varianceOfReturns}\PY{p}{]}\PY{p}{,}
                           \PY{n}{axis} \PY{o}{=} \PY{l+m+mi}{1}\PY{p}{)}
@@ -355,13 +357,13 @@ Python}\label{convex-optimization-w-python}}
 \begin{Verbatim}[commandchars=\\\{\}]
 {\color{outcolor}Out[{\color{outcolor}4}]:}            Mean of the Returns  Variance of the Returns
         F\_close               0.001533                 0.000352
-        BA\_close             -0.000098                 0.000331
+        BA\_close              0.000098                 0.000331
         RTN\_close             0.001566                 0.000214
         VLO\_close             0.003054                 0.000501
-        AAL\_close            -0.000345                 0.000649
-        CI\_close             -0.002542                 0.000194
+        AAL\_close             0.000345                 0.000649
+        CI\_close              0.002542                 0.000194
         IBM\_close             0.001668                 0.000267
-        PG\_close             -0.001568                 0.000145
+        PG\_close              0.001568                 0.000145
 \end{Verbatim}
             
     \begin{longtable}[]{@{}lcr@{}}
@@ -374,10 +376,10 @@ Ford & 0.001533 & 0.000352\tabularnewline
 Boeing & 0.000098 & 0.000331\tabularnewline
 Raytheon & 0.001566 & 0.000214\tabularnewline
 Valero Energy & 0.003054 & 0.000501\tabularnewline
-American Airlines & -0.000345 & 0.000649\tabularnewline
-Cigna & -0.002542 & 0.000194\tabularnewline
+American Airlines & 0.000345 & 0.000649\tabularnewline
+Cigna & 0.002542 & 0.000194\tabularnewline
 IBM & 0.001668 & 0.000267\tabularnewline
-Procter \& Gamble & -0.001568 & 0.000145\tabularnewline
+Procter \& Gamble & 0.001568 & 0.000145\tabularnewline
 \bottomrule
 \end{longtable}
 
@@ -453,8 +455,8 @@ evaluate the Hessian of \(X\Sigma X^{T}\).
 {\color{incolor}In [{\color{incolor}7}]:} \PY{n}{x1}\PY{p}{,} \PY{n}{x2}\PY{p}{,} \PY{n}{x3}\PY{p}{,} \PY{n}{x4}\PY{p}{,} \PY{n}{x5}\PY{p}{,} \PY{n}{x6}\PY{p}{,} \PY{n}{x7}\PY{p}{,} \PY{n}{x8} \PY{o}{=} \PY{n}{symbols}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ford, Boeing, Raytheon, Valero, AmericanAir, Cigna, IBM, PG}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
         \PY{n}{X} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{n}{x1}\PY{p}{,} \PY{n}{x2}\PY{p}{,} \PY{n}{x3}\PY{p}{,} \PY{n}{x4}\PY{p}{,} \PY{n}{x5}\PY{p}{,} \PY{n}{x6}\PY{p}{,} \PY{n}{x7}\PY{p}{,} \PY{n}{x8}\PY{p}{]}\PY{p}{)}
         \PY{n}{R} \PY{o}{=} \PY{n}{meansOfReturns}
-        \PY{n}{bigSigma} \PY{o}{=} \PY{n}{oneDayReturns}\PY{o}{.}\PY{n}{cov}\PY{p}{(}\PY{p}{)}
-        \PY{n}{Z} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{X}\PY{o}{*}\PY{n}{bigSigma}\PY{o}{*}\PY{n}{X}\PY{o}{.}\PY{n}{T}\PY{p}{)}
+        \PY{n}{Sigma} \PY{o}{=} \PY{n}{oneDayReturns}\PY{o}{.}\PY{n}{cov}\PY{p}{(}\PY{p}{)}
+        \PY{n}{Z} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{X}\PY{o}{*}\PY{n}{Sigma}\PY{o}{*}\PY{n}{X}\PY{o}{.}\PY{n}{T}\PY{p}{)}
 \end{Verbatim}
 
 
@@ -481,7 +483,7 @@ evaluate the Hessian of \(X\Sigma X^{T}\).
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}9}]:} \PY{n}{H} \PY{o}{=} \PY{n}{hessian}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{bigSigma}\PY{p}{)}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}9}]:} \PY{n}{H} \PY{o}{=} \PY{n}{hessian}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{Sigma}\PY{p}{)}\PY{p}{)}
         \PY{n}{np}\PY{o}{.}\PY{n}{linalg}\PY{o}{.}\PY{n}{det}\PY{p}{(}\PY{n}{H}\PY{p}{)}
 \end{Verbatim}
 
@@ -495,6 +497,86 @@ evaluate the Hessian of \(X\Sigma X^{T}\).
 there are 4 values, but regardless, zero times any real value is zero
 and thus, the matrix is PSD and the problem is thus convex.
 
+    \begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  Solve for Jane's and Johns' optimal portfolio. Write your answer below
+\end{enumerate}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}10}]:} \PY{n}{mu} \PY{o}{=} \PY{n}{meansOfReturns1}
+         
+         \PY{n}{w} \PY{o}{=} \PY{n}{Variable}\PY{p}{(}\PY{l+m+mi}{8}\PY{p}{)} \PY{c+c1}{\PYZsh{} Decision variable}
+         
+         \PY{n}{gamma} \PY{o}{=} \PY{l+m+mi}{2} \PY{c+c1}{\PYZsh{} Risk Parameter in the utility function}
+         \PY{n}{ret} \PY{o}{=} \PY{n}{mu}\PY{o}{*}\PY{n}{w}
+         \PY{n}{risk} \PY{o}{=} \PY{n}{quad\PYZus{}form}\PY{p}{(}\PY{n}{w}\PY{p}{,} \PY{n}{Sigma}\PY{p}{)}
+         
+         \PY{n}{obj} \PY{o}{=} \PY{n}{Maximize}\PY{p}{(}\PY{n}{ret} \PY{o}{\PYZhy{}} \PY{n}{gamma}\PY{o}{*}\PY{n}{risk}\PY{p}{)}
+         \PY{n}{constraints} \PY{o}{=} \PY{p}{[}\PY{n+nb}{sum}\PY{p}{(}\PY{n}{w}\PY{p}{)} \PY{o}{==} \PY{l+m+mi}{1} \PY{p}{,} \PY{n}{w} \PY{o}{\PYZgt{}}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{]}
+         
+         \PY{c+c1}{\PYZsh{} Form the problem}
+         \PY{n}{prob} \PY{o}{=} \PY{n}{Problem}\PY{p}{(}\PY{n}{obj}\PY{p}{,} \PY{n}{constraints}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}11}]:} \PY{n}{port\PYZus{}data} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+         \PY{n}{ret\PYZus{}data} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+         \PY{n}{risk\PYZus{}data} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+         \PY{n}{prob\PYZus{}data} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+         
+         \PY{n}{gamma\PYZus{}vals} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{]}
+         \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{:}
+             \PY{n}{gamma} \PY{o}{=} \PY{n}{gamma\PYZus{}vals}\PY{p}{[}\PY{n}{i}\PY{p}{]}
+             \PY{n}{prob}\PY{o}{.}\PY{n}{solve}\PY{p}{(}\PY{p}{)} \PY{c+c1}{\PYZsh{} Solve the problem for a specific value of gamma}
+             \PY{n}{risk\PYZus{}data}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{sqrt}\PY{p}{(}\PY{n}{risk}\PY{p}{)}\PY{o}{.}\PY{n}{value}\PY{p}{)} \PY{c+c1}{\PYZsh{} optimal value of the risk (standard deviation)}
+             \PY{n}{ret\PYZus{}data}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{ret}\PY{o}{.}\PY{n}{value}\PY{p}{)} \PY{c+c1}{\PYZsh{} optimal value of the return}
+             \PY{n}{prob\PYZus{}data}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{prob}\PY{o}{.}\PY{n}{value}\PY{p}{)} \PY{c+c1}{\PYZsh{} maximum utility}
+             \PY{n}{port\PYZus{}data}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{w}\PY{o}{.}\PY{n}{value}\PY{p}{)}  
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}12}]:} \PY{n+nb}{print}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{port\PYZus{}data}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+         \PY{n+nb}{print}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{port\PYZus{}data}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+1.0000000000000788
+1.0000000000000788
+
+    \end{Verbatim}
+
+    Checking that the proportions add to 1. Because of floating point
+arithmetic, the value is not exactly 1, but the results ``check out''
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}13}]:} \PY{n}{results} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}
+             \PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{John}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{s Optimal Portfolio}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}\PY{n}{port\PYZus{}data}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}
+              \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Jane}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{s Optimal Portfolio}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}\PY{n}{port\PYZus{}data}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
+             \PY{n}{index}\PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Ford}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Boeing}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Raytheon}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} 
+                           \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Valero}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{American Airlines}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} 
+                           \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Cigna}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{IBM}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ PG}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+         \PY{n}{results}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}13}]:}                    John's Optimal Portfolio  Jane's Optimal Portfolio
+         Ford                           7.262696e-08              7.262696e-08
+         Boeing                         2.046956e-08              2.046956e-08
+         Raytheon                       6.250528e-08              6.250528e-08
+         Valero                         4.409146e-01              4.409146e-01
+         American Airlines              2.174878e-08              2.174878e-08
+         Cigna                          5.590849e-01              5.590849e-01
+         IBM                            7.084433e-08              7.084433e-08
+          PG                            2.445910e-07              2.445910e-07
+\end{Verbatim}
+            
 
     % Add a bibliography block to the postdoc
     
